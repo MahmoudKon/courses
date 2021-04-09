@@ -31,7 +31,7 @@ class CourseController extends Controller
 
     public function rows(Request $request)
     {
-        if($request->ajax()) :
+        if ($request->ajax()) :
             $paginate = $request->paginateNumber;
             $rows = Course::when($request->search, function ($q) use ($request) {
                 return $q->where($request->columnName, 'like', '%' . $request->search . '%');
@@ -52,7 +52,7 @@ class CourseController extends Controller
             'title'       => 'required|min:15',
             'description' => 'required|min:15',
             'image'       => 'required|image|mimes:jpeg,jpg,png,gif',
-            'tags'        => 'required|min:3',
+            'tags'        => 'required|min:2',
             'category_id' => 'required',
             'user_id'     => 'required',
             'status'      => 'required',
@@ -73,11 +73,10 @@ class CourseController extends Controller
 
     public function show(Course $course, Request $request)
     {
-        if($request->ajax())
-        {
+        if ($request->ajax()) {
             $rows = Video::where('course_id', $course->id)->paginate(2);
             $url  = 'videos';
-            return view('dashboard.layouts.list',compact('rows', 'url'));
+            return view('dashboard.layouts.list', compact('rows', 'url'));
         }
         $videos = Video::where('course_id', $course->id)->paginate(3);
         $comments = CommentCourse::where('course_id', $course->id)->get();
@@ -97,7 +96,7 @@ class CourseController extends Controller
             'title'       => 'required|min:15',
             'description' => 'required|min:15',
             'image'       => 'image|mimes:jpeg,jpg,png,gif',
-            'tags'        => 'required|min:3',
+            'tags'        => 'required|min:2',
             'category_id' => 'required',
             'status'      => 'required',
         ]);
@@ -123,14 +122,14 @@ class CourseController extends Controller
         $course->delete();
         alert()->success(__('site.deleted_successfully'), __('site.good_job'));
         return redirect('dashboard/courses');
-    }//end of destroy the single row or multi rows
+    } //end of destroy the single row or multi rows
 
     public function multidelete(Request $request)
     {
         $ids = explode(',', $request->ids); // to make the all id is array
         $courses = Course::whereIn('id', $ids)->get(); // get the rows by id to remove his image first and delete him
 
-        foreach($courses as $course) :
+        foreach ($courses as $course) :
             File::delete('uploads/courses_images/' . $course->image);
             $course->delete();
         endforeach; //end foreach to remove the row's image and delete him

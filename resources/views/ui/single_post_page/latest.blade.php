@@ -10,7 +10,8 @@
                 <div><img src="{{ $last->image_path }}" alt=""></div>
             </div>
             <div class="latest_content">
-                <div class="latest_title"><a href="{{ route('posts.single', $last->id) }}">{{ $last->title }}</a></div>
+                <div class="latest_title"><a href="{{ route('posts.single', $last->id) }}">{!! $last->title !!}</a>
+                </div>
                 <div class="latest_date">{{ date('l j F Y', strtotime($last->created_at)) }}</div>
             </div>
         </div>
