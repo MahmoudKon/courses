@@ -30,7 +30,7 @@ class PostController extends Controller
 
     public function rows(Request $request)
     {
-        if($request->ajax()) :
+        if ($request->ajax()) :
             $paginate = $request->paginateNumber;
             $rows = Post::when($request->search, function ($q) use ($request) {
                 return $q->Where($request->columnName, 'like', '%' . str_replace('-', ' ', $request->search) . '%');
@@ -51,7 +51,7 @@ class PostController extends Controller
             'user_id'       => 'required',
             'description'   => 'required',
             'tags'          => 'required',
-            'image'         => 'image|mimes:jpeg,jpg,png,gif',
+            'image'         => 'mimes:jpeg,jpg,png,gif',
             'category_id'   => 'required',
         ]);
         $request_data = $request->except('image');
@@ -67,7 +67,6 @@ class PostController extends Controller
         Post::create($request_data);
         alert()->success(__('site.added_successfully'), __('site.good_job'));
         return redirect('dashboard/posts');
-
     } // end of store the new row
 
     public function show(Post $post)
@@ -88,13 +87,13 @@ class PostController extends Controller
         $request->validate([
             'description'   => 'required',
             'tags'          => 'required',
-            'image'         => 'image|mimes:jpeg,jpg,png,gif',
+            'image'         => 'mimes:jpeg,jpg,png,gif',
             'category_id'   => 'required',
         ]);
         $request_data = $request->except('image');
 
         if ($request->image) {
-            if($post->image){
+            if ($post->image) {
                 Storage::disk('public_uploads')->delete('/posts/' . $post->image);
             }
             Image::make($request->image)
@@ -111,26 +110,26 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
-        if($post->image){
+        if ($post->image) {
             Storage::disk('public_uploads')->delete('/posts/' . $post->image);
         }
         $post->delete();
         alert()->success(__('site.deleted_successfully'), __('site.good_job'));
         return redirect('dashboard/posts');
-    }//end of destroy the single row or multi rows
+    } //end of destroy the single row or multi rows
 
     public function multidelete(Request $request)
     {
         $ids = explode(',', $request->ids); // to make the all id is array
         $posts = Post::whereIn('id', $ids)->get(); // get the rows by id to remove his image first and delete him
 
-        foreach($posts as $post) :
-            if($post->image){
+        foreach ($posts as $post) :
+            if ($post->image) {
                 Storage::disk('public_uploads')->delete('/posts/' . $post->image);
             }
             $post->delete();
         endforeach; //end foreach to remove the row's image and delete him
-        
+
         alert()->success(__('site.deleted_successfully'), __('site.good_job'));
         return redirect()->route('dashboard.posts.index');
     } // end of destroy multi rows

@@ -47,7 +47,6 @@ class UserController extends Controller
 
         auth()->login($user);
         return redirect()->to('/home');
-
     } //end of store
 
     public function signin()
@@ -70,7 +69,6 @@ class UserController extends Controller
         } else {
             return back()->with('error', 'Wrong Login Details');
         }
-
     } //end of store
 
     public function logout()
@@ -79,7 +77,4 @@ class UserController extends Controller
 
         return redirect()->back();
     }
-
-
-
 }//end of controller

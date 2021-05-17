@@ -51,7 +51,7 @@ class CourseController extends Controller
         $request->validate([
             'title'       => 'required|min:15',
             'description' => 'required|min:15',
-            'image'       => 'required|image|mimes:jpeg,jpg,png,gif',
+            'image'       => 'required|mimes:jpeg,jpg,png,gif',
             'tags'        => 'required|min:2',
             'category_id' => 'required',
             'user_id'     => 'required',
@@ -95,7 +95,7 @@ class CourseController extends Controller
         $request->validate([
             'title'       => 'required|min:15',
             'description' => 'required|min:15',
-            'image'       => 'image|mimes:jpeg,jpg,png,gif',
+            'image'       => 'mimes:jpeg,jpg,png,gif',
             'tags'        => 'required|min:2',
             'category_id' => 'required',
             'status'      => 'required',

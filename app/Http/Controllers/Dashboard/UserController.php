@@ -30,7 +30,7 @@ class UserController extends Controller
 
     public function rows(Request $request)
     {
-        if($request->ajax()) :
+        if ($request->ajax()) :
             $paginate = $request->paginateNumber;
             $rows = User::where('role', '<>', 'super_admin')->where(function ($q) use ($request) {
                 return $q->when($request->search, function ($query) use ($request) {
@@ -55,7 +55,7 @@ class UserController extends Controller
             'address'       => 'required|min:5',
             'phone'         => 'required|min:15',
             'birthday'      => 'required',
-            'image'         => 'image|mimes:jpeg,jpg,png,gif',
+            'image'         => 'mimes:jpeg,jpg,png,gif',
             'gender'        => 'required',
             'status'        => 'required',
             'role'          => 'required',
@@ -70,10 +70,13 @@ class UserController extends Controller
                     $constraint->aspectRatio();
                 })->save(public_path('uploads/users_images/' . $request->image->hashName()));
             $request_data['image'] = $request->image->hashName();
-        }else{
-            if($request->gender == 'male') { $request_data['image'] = 'male.png';
-            }else{ $request_data['image'] = 'female.jpg'; }
-        }//end of if
+        } else {
+            if ($request->gender == 'male') {
+                $request_data['image'] = 'male.png';
+            } else {
+                $request_data['image'] = 'female.jpg';
+            }
+        } //end of if
 
         $user = User::create($request_data);
         $user->attachRole($request_data['role']);
@@ -85,15 +88,14 @@ class UserController extends Controller
 
     public function show(User $user, Request $request)
     {
-        if($request->ajax() && $request->modal == 'courses')
-        {
+        if ($request->ajax() && $request->modal == 'courses') {
             $rows = Course::where('user_id', $user->id)->whereHas('videos')->paginate(3);
             $url  = 'courses';
-            return view('dashboard.layouts.list',compact('rows', 'url'));
-        }else if($request->ajax() && $request->modal == 'posts'){
+            return view('dashboard.layouts.list', compact('rows', 'url'));
+        } else if ($request->ajax() && $request->modal == 'posts') {
             $rows   = Post::where('user_id', $user->id)->paginate(3);
             $url  = 'posts';
-            return view('dashboard.layouts.list',compact('rows', 'url'));
+            return view('dashboard.layouts.list', compact('rows', 'url'));
         }
         $courses = Course::where('user_id', $user->id)->whereHas('videos')->paginate(3);
         $posts   = Post::where('user_id', $user->id)->paginate(3);
@@ -114,16 +116,16 @@ class UserController extends Controller
             'address'       => 'required|min:5',
             'phone'         => 'required|min:11',
             'birthday'      => 'required',
-            'image'         => 'image|mimes:jpeg,jpg,png,gif',
+            'image'         => 'mimes:jpeg,jpg,png,gif',
             'gender'        => 'required',
             'status'        => 'required',
             'role'          => 'required',
-            ]);
+        ]);
 
         $request_data = $request->except(['permissions', 'image', 'password', 'password_confirmation']);
         $roles = explode(' ', $request->role);
 
-        if($request->password){
+        if ($request->password) {
             dd($request->all());
             $request_data['password'] = bcrypt($request->password);
         }
@@ -137,8 +139,8 @@ class UserController extends Controller
                     $constraint->aspectRatio();
                 })->save(public_path('uploads/users_images/' . $request->image->hashName()));
             $request_data['image'] = $request->image->hashName();
-        }else{
-            if($user->image != 'male.png' && $user->image != 'female.jpg') :
+        } else {
+            if ($user->image != 'male.png' && $user->image != 'female.jpg') :
                 $request_data['image'] = $user->image;
             endif;
         } //end of external if
@@ -166,13 +168,13 @@ class UserController extends Controller
         $ids = explode(',', $request->ids); // to make the all id is array
         $users = User::whereIn('id', $ids)->get(); // get the users by id to remove his image first and delete him
 
-        foreach($users as $user) :
+        foreach ($users as $user) :
             if ($user->image != 'male.png' && $user->image != 'female.jpg') :
                 Storage::disk('public_uploads')->delete('/users_images/' . $user->image);
             endif; //end of inner if
             $user->delete();
         endforeach; //end foreach to remove the users image and delete him
-        
+
         alert()->success(__('site.deleted_successfully'), __('site.good_job'));
         return redirect()->route('dashboard.users.index');
     } // end of destroy multi rows
